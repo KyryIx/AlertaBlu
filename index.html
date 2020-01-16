@@ -1,0 +1,75 @@
+<html>
+	<head>
+		<title>P&aacute;gina de coleta de dados do AlertaBlu</title>
+		<script>
+			// https://www.w3schools.com/xml/ajax_intro.asp
+			// https://www.w3schools.com/jsref/met_document_getelementbyid.asp
+			// https://www.w3schools.com/jsref/prop_node_firstchild.asp
+			// https://www.w3schools.com/jsref/met_node_removechild.asp
+			// https://www.w3schools.com/js/js_json_parse.asp
+			// https://www.w3schools.com/js/js_object_es5.asp
+			// https://www.w3schools.com/js/js_loop_for.asp
+			// https://www.w3schools.com/jsref/met_document_createelement.asp
+			// https://www.w3schools.com/js/js_datatypes.asp
+			// https://www.w3schools.com/jsref/met_win_setinterval.asp
+			
+			function loadTable() {
+				var xhttp = new XMLHttpRequest();
+				xhttp.onreadystatechange = function() {
+					if (this.readyState == 4 && this.status == 200) {
+						var table = document.getElementById("tableValues");
+						
+						while( table.firstChild ){
+							table.removeChild( table.firstChild );
+						}
+						
+						var data = JSON.parse( this.responseText );
+						var keys = Object.keys( data );
+						for( var k in keys ){
+							var tr = document.createElement( 'tr' );
+							var name = keys[k];
+							var type = typeof data[ keys[k] ];
+							
+							var title = tr.appendChild( document.createElement('td') );
+							//title.innerHTML = `<b>${keys[k]}</b>`;
+							title.innerHTML = '<b>'+keys[k]+'</b>';
+							
+							if( type == 'object' ){
+								for( var j in data[ keys[k] ] ){
+									var td = document.createElement( 'td' );
+									
+									td.innerText = data[ keys[k] ][j];
+									
+									if( keys[k] == 'condicao_do_tempo_img' ){
+										td.innerHTML = '<img src="http://alertablu.cob.sc.gov.br/static/img/previsao/' + td.innerText + '"/>';
+									}
+									
+									tr.appendChild( td );
+								}
+							}
+							else if( type == 'string' ){
+								var td = document.createElement( 'td' );
+								td.innerText = data[ keys[k] ];
+								tr.appendChild( td );
+							}
+							
+							table.appendChild( tr );
+						}
+					}
+				};
+				//xhttp.open( "GET", "http://127.0.0.1/data.php?option=all", true );
+				xhttp.open( "GET", "http://127.0.0.1:81/@estudo@/-- importante --/alertablu/final/data.php?option=all", true );
+				xhttp.send();
+			}
+			
+			window.onload = function(){
+				loadTable();
+				setInterval( loadTable, 60000 );
+			}
+		</script>
+	</head>
+	<body>
+		<h1 align="center">P&aacute;gina de coleta de dados do AlertaBlu</h1>
+		<table align="center" border="1" id="tableValues"></table>
+	</body>
+</html>
